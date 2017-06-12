@@ -1,14 +1,15 @@
 'require pry'
 class TodaysNews::Story
 
-  attr_accessor :name, :url
+  attr_accessor :name, :url, :summary
 
   def initialize(name=nil, url=nil)
     @name = name
     @url = url
+end
 
 def self.all
-  @all ||= scrape_todays_news
+  @@all ||= scrape_todays_news
 end
 
 def self.find(id)
@@ -16,29 +17,27 @@ def self.find(id)
 end
 
 def summary
-    @summary ||= plot_summary_doc.search("div >p:first-child").text
+    @summary ||= article_intro_doc.search("div > p:first-child").text.strip
   end
 
 
 
 def self.scrape_todays_news
   doc = Nokogiri::HTML(open("http://www.npr.org/sections/us/"))
-  names = doc.seach("h2 a")
-  binding.pry
-  names.collect {|e| e.text.strip, "http://www.npr.org/sections/us#{e.attr("href").split("?").strip}"}
+  names = doc.search("h2 a")
 
-
+  names.collect {|e| new(e.text.strip,  "http://www.npr.org/sections/us#{e.attr("href").strip}")}
 end
 
   def article_intro_doc
       @article_intro_doc ||= Nokogiri::HTML(open("#{self.url}transcript"))
-
     end
 
     def doc
       @doc ||= Nokogiri::HTML(open(self.url))
+      binding.pry
     end
-end
+
 end
 
 

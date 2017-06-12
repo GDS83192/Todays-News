@@ -39,7 +39,7 @@ def start
       list
 
     elsif input.to_i > 0
-      if movie = NowPlaying::Movie.find(input.to_i)
+      if story = TodaysNews::Story.find(input.to_i)
         print_story(story)
         #So I can just skip the by name method
       end
